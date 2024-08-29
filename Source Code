@@ -1,0 +1,76 @@
+import yt_dlp
+import pyttsx3
+
+# Initialize the text-to-speech engine
+engine = pyttsx3.init()
+
+def download_youtube_content(choice, url, download_path):
+    ydl_opts = {}
+    text = ""
+
+    if choice == 1:
+        ydl_opts = {'format': 'best', 'outtmpl': f'{download_path}/%(title)s.%(ext)s'}
+        text = "High resolution video downloaded successfully!"
+    elif choice == 2:
+        ydl_opts = {'format': 'worst', 'outtmpl': f'{download_path}/%(title)s.%(ext)s'}
+        text = "Low resolution video downloaded successfully!"
+    elif choice == 3:
+        ydl_opts = {'format': 'bestaudio', 'outtmpl': f'{download_path}/%(title)s.%(ext)s'}
+        text = "Audio downloaded successfully!"
+    else:
+        engine.say("Invalid Input")
+        engine.runAndWait()
+        print("Invalid Input")
+        return
+
+    try:
+        # Download the content
+        with yt_dlp.YoutubeDL(ydl_opts) as ydl:
+            ydl.download([url])
+
+        # Notify the user with text-to-speech and print
+        engine.say(text)
+        engine.runAndWait()
+        print(text)
+    except Exception as e:
+        error_text = f"An error occurred: {str(e)}"
+        engine.say(error_text)
+        engine.runAndWait()
+        print(error_text)
+
+# Menu display
+print("Menu:")
+print("1. Video in High Resolution")
+print("2. Video in Low Resolution")
+print("3. Audio from Video")
+print("4. Exit")
+
+try:
+    # Choice input with validation
+    choice = int(input("Enter Your Choice: "))
+    if choice not in [1, 2, 3, 4]:
+        raise ValueError("Invalid choice, must be 1, 2, 3, or 4.")
+    
+    if choice != 4:
+        # Link input
+        url = input("Input Link: ")
+        if not url.startswith("http"):
+            raise ValueError("Invalid URL. Please provide a valid YouTube link.")
+        
+        # Download path input
+        download_path = "D:/Python/PYTHON PROGECTS"
+
+        download_youtube_content(choice, url, download_path)
+    else:
+        engine.say("Successfully Exited")
+        engine.runAndWait()
+        print("Successfully Exited")
+except ValueError as ve:
+    engine.say(str(ve))
+    engine.runAndWait()
+    print(str(ve))
+except Exception as e:
+    error_text = f"An unexpected error occurred: {str(e)}"
+    engine.say(error_text)
+    engine.runAndWait()
+    print(error_text)
